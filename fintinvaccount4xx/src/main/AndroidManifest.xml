@@ -1,2 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.trofiventures.fintinvaccount4xx" />
+    package="com.trofiventures.fintinvaccount4xx">
+
+    <application>
+        <activity android:name=".AddCreditCardActivity" android:label="@string/add_credit_card"></activity>
+    </application>
+
+</manifest>

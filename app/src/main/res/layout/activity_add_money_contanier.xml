@@ -6,7 +6,12 @@
     android:orientation="vertical"
     tools:context=".AddMoneyContanierActivity">
 
-    <EditText
+    <com.braintreepayments.cardform.view.CardForm
+        android:id="@+id/add_credit_card_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--<EditText
         android:id="@+id/account_number_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Description"
-        android:inputType="text" />
+        android:inputType="text" />-->
 
     <Button
         android:layout_width="wrap_content"

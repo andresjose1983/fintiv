@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import com.trofiventures.fintinvaccount4xx.AddCreditCardActivity
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
 import com.trofiventures.fintinvaccount4xx.viewModel.FintivAccounts4xxViewModel
 import kotlinx.android.synthetic.main.activity__3xx.*
@@ -60,7 +61,7 @@ class _4xx : AppCompatActivity() {
 
     fun getToken(view: View) {
         val token = FintivAccounts4xx.currentToken(this)
-        token?.let {
+        token.let {
             Toast.makeText(this, "Your token ${it.contextResponse.token}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -70,7 +71,8 @@ class _4xx : AppCompatActivity() {
     }
 
     fun cc(view: View) {
-        startActivity(Intent(this, AddMoneyContanierActivity::class.java))
+        //startActivity(Intent(this, AddMoneyContanierActivity::class.java))
+        startActivity(Intent(this, AddCreditCardActivity::class.java))
     }
 
     override fun onDestroy() {

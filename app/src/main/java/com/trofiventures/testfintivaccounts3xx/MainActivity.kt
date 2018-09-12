@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, _3xx::class.java))
     }
 
-    fun _4xx(view: View){
+    fun _4xx(view: View) {
         startActivity(Intent(this, _4xx::class.java))
     }
 

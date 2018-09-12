@@ -18,7 +18,7 @@ class AddMoneyContanierActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_money_contanier)
 
-        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443")
+        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
 
         viewModel = ViewModelProviders.of(this).get(FintivAddContainer4xxViewModel::class.java)
 
@@ -37,11 +37,6 @@ class AddMoneyContanierActivity : AppCompatActivity() {
     }
 
     fun save(view: View) {
-        viewModel.addCreditCard(accountNumber = account_number_edit_text.text.toString(),
-                expireYear = expire_year_edit_text.text.toString(),
-                expireMonth = expire_month_edit_text.text.toString(),
-                accountName = account_name_edit_text.text.toString(),
-                cvv = cvv_edit_text.text.toString(),
-                description = description_edit_text.text.toString())
+        //viewModel.addCreditCard()
     }
 }

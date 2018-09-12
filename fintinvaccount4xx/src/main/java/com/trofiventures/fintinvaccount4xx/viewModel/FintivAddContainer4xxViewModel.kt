@@ -4,6 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
+import com.braintreepayments.cardform.view.CardForm
 import com.cardconnect.consumersdk.CCConsumerTokenCallback
 import com.cardconnect.consumersdk.domain.CCConsumerAccount
 import com.cardconnect.consumersdk.domain.CCConsumerCardInfo
@@ -57,29 +58,7 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
             return
         }
 
-        val cc = CCConsumerCardInfo()
-        cc.cardNumber = accountNumber
-        cc.expirationDate = expireMonth.plus("/").plus(expireYear)
-        cc.ccConsumerExpirationDateSeparator = CCConsumerExpirationDateSeparator.SLASH
-        cc.cvv = cvv
-
-        if(!cc.isCardValid){
-            error.value = "error_invalid_cc"
-            return
-        }
-
-        doAsync {
-
-            FintivAccounts4xx.cardConnect()?.generateAccountForCard(cc, object : CCConsumerTokenCallback {
-                override fun onCCConsumerTokenResponseError(p0: CCConsumerError) {
-                    error.postValue(p0.responseMessage)
-                }
-
-                override fun onCCConsumerTokenResponse(p0: CCConsumerAccount) {
-                    Log.d("hola", "${p0.token}")
-                }
-            })
-        }
+        validateCreditCardConnect(accountNumber, expireMonth, expireYear, cvv)
 
         /*doAsync {
             val containerSubType = if (accountNumber.startsWith("51") || accountNumber.startsWith("55") && accountNumber.length == 16) "MASTERCARD"
@@ -102,5 +81,44 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
                 createAccountResponse.postValue(body)
             }
         }*/
+    }
+
+    private fun validateCreditCardConnect(accountNumber: String,
+                                          expireMonth: String,
+                                          expireYear: String,
+                                          cvv: String) {
+        val cc = CCConsumerCardInfo()
+        cc.cardNumber = accountNumber
+        cc.expirationDate = expireMonth.plus("/").plus(expireYear)
+        cc.ccConsumerExpirationDateSeparator = CCConsumerExpirationDateSeparator.SLASH
+        cc.cvv = cvv
+
+        if (!cc.isCardValid) {
+            error.value = "error_invalid_cc"
+            return
+        }
+
+        doAsync {
+
+            FintivAccounts4xx.cardConnect()?.generateAccountForCard(cc, object : CCConsumerTokenCallback {
+                override fun onCCConsumerTokenResponseError(p0: CCConsumerError) {
+                    error.postValue(p0.responseMessage)
+                }
+
+                override fun onCCConsumerTokenResponse(p0: CCConsumerAccount) {
+                    Log.d("hola", "${p0.token}")
+                }
+            })
+        }
+    }
+
+    fun addCreditCard(cardForm: CardForm) {
+
+        if (!cardForm.isValid) {
+            cardForm.validate()
+            return
+        }
+
+        validateCreditCardConnect(cardForm.cardNumber, cardForm.expirationMonth, cardForm.expirationYear, cardForm.cvv)
     }
 }
