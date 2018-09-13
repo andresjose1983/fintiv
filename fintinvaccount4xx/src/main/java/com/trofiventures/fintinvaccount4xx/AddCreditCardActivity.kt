@@ -3,6 +3,7 @@ package com.trofiventures.fintinvaccount4xx
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,8 +21,6 @@ class AddCreditCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_credit_card)
 
-        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
-
         viewModel = ViewModelProviders.of(this).get(FintivAddContainer4xxViewModel::class.java)
 
         with(viewModel) {
@@ -35,6 +34,11 @@ class AddCreditCardActivity : AppCompatActivity() {
                     android.widget.Toast.makeText(this@AddCreditCardActivity, it.contextResponse.statusCode, android.widget.Toast.LENGTH_SHORT).show()
                 }
             })
+            cardConnectToken.observe(this@AddCreditCardActivity, Observer {
+                it?.let {
+                    android.widget.Toast.makeText(this@AddCreditCardActivity, it, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         add_credit_card_form.cardRequired(true)
@@ -46,14 +50,17 @@ class AddCreditCardActivity : AppCompatActivity() {
                 .setup(this)
 
         save_fab.setOnClickListener {
-            viewModel.addCreditCard(add_credit_card_form)
+            viewModel.addCreditCard(add_credit_card_form, card_holder_edit_text.text.toString(),
+                    description_edit_text.text.toString())
         }
 
-        val cardFrontFragment = CardFrontFragment()
-        val cardBackFragment = CardBackFragment()
-        // Add the fragment to the 'fragment_container' FrameLayout
-        supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, cardFrontFragment).commit()
+        val cardFrontFragment = supportFragmentManager.findFragmentById(R.id.front_card_view) as CardFrontFragment
+        val cardBackFragment = supportFragmentManager.findFragmentById(R.id.back_card_view) as CardBackFragment
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+
+        fragmentTransaction.show(cardFrontFragment)
+        fragmentTransaction.hide(cardBackFragment)
+        fragmentTransaction.commit()
 
         add_credit_card_form.cardEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -119,23 +126,8 @@ class AddCreditCardActivity : AppCompatActivity() {
 
         with(add_credit_card_form.cvvEditText) {
             setOnFocusChangeListener { view, b ->
-                if (b) {
-                    supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(
-                                    R.animator.card_flip_right_in,
-                                    R.animator.card_flip_right_out,
-                                    R.animator.card_flip_left_in,
-                                    R.animator.card_flip_left_out)
-                            .replace(R.id.fragment_container, cardBackFragment).commit()
-                } else {
-                    supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(
-                                    R.animator.card_flip_right_in,
-                                    R.animator.card_flip_right_out,
-                                    R.animator.card_flip_left_in,
-                                    R.animator.card_flip_left_out)
-                            .replace(R.id.fragment_container, cardFrontFragment).commit()
-                }
+                if (b) switchCard(cardBackFragment, cardFrontFragment)
+                else switchCard(cardFrontFragment, cardBackFragment)
             }
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable) {
@@ -152,6 +144,16 @@ class AddCreditCardActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun switchCard(show: Fragment, hide: Fragment) {
+        val sp = supportFragmentManager.beginTransaction()
+        sp.hide(hide)
+        sp.setCustomAnimations(
+                R.animator.card_flip_right_in,
+                R.animator.card_flip_right_out)
+        sp.show(show)
+        sp.commit()
     }
 
     override fun onDestroy() {

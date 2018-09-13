@@ -28,19 +28,19 @@ class CardFrontFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
 
-        val view = inflater.inflate(R.layout.fragment_card_front, container, false)
+        val viewFront = inflater.inflate(R.layout.fragment_card_front, container, false)
         fontTypeChange = FontTypeChange(activity)
 
-        number = view.findViewById(R.id.tv_card_number)
-        name = view.findViewById(R.id.tv_member_name)
-        validity = view.findViewById(R.id.tv_validity)
-        cardType = view.findViewById(R.id.ivType)
+        number = viewFront.findViewById(R.id.tv_card_number)
+        name = viewFront.findViewById(R.id.tv_member_name)
+        validity = viewFront.findViewById(R.id.tv_validity)
+        cardType = viewFront.findViewById(R.id.ivType)
 
         number?.typeface = fontTypeChange.get_fontface(3)
         name?.typeface = fontTypeChange.get_fontface(3)
         validity?.typeface = fontTypeChange.get_fontface(3)
 
 
-        return view
+        return viewFront
     }
 }// Required empty public constructor

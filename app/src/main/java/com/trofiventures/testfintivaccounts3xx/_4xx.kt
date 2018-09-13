@@ -22,7 +22,9 @@ class _4xx : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(FintivAccounts4xxViewModel::class.java)
 
+        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
         FintivAccounts4xx.setupWithTenant(tenant = "JANUS")
+
         with(viewModel) {
             error.observe(this@_4xx, Observer {
                 it?.let {
@@ -62,7 +64,7 @@ class _4xx : AppCompatActivity() {
     fun getToken(view: View) {
         val token = FintivAccounts4xx.currentToken(this)
         token.let {
-            Toast.makeText(this, "Your token ${it.contextResponse.token}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Your token ${it?.contextResponse?.token}", Toast.LENGTH_SHORT).show()
         }
     }
 

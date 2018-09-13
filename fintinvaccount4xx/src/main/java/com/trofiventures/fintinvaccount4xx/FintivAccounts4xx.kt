@@ -41,7 +41,7 @@ object FintivAccounts4xx {
         }?.apply()
     }
 
-    fun currentToken(context: Context): SigonReponse {
+    fun currentToken(context: Context): SigonReponse? {
         return Gson().fromJson(context.getSharedPreferences(FINTIV, Context.MODE_PRIVATE).getString(TOKEN, null), SigonReponse::class.java)
     }
 

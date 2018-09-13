@@ -14,7 +14,21 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <fragment
+                android:id="@+id/front_card_view"
+                android:name="com.trofiventures.fintinvaccount4xx.fragment.CardFrontFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <fragment
+                android:id="@+id/back_card_view"
+                android:name="com.trofiventures.fintinvaccount4xx.fragment.CardBackFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,6 +64,7 @@
                 android:layout_marginStart="57dp">
 
                 <EditText
+                    android:id="@+id/description_edit_text"
                     style="@style/bt_card_form_field"
                     android:contentDescription="@string/description"
                     android:hint="@string/description" />

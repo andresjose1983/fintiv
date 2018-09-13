@@ -19,7 +19,7 @@ class CardBackFragment : Fragment() {
     lateinit var fontTypeChange: FontTypeChange
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                             savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
 
         val view = inflater.inflate(R.layout.fragment_card_back, container, false)
@@ -29,5 +29,4 @@ class CardBackFragment : Fragment() {
 
         return view
     }
-
 }// Required empty public constructor

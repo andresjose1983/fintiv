@@ -32,8 +32,14 @@ class FintivSVA4xxViewModel(private val context: Application) : AndroidViewModel
             return
         }
 
+        val token = FintivAccounts4xx.currentToken(context)
+        if(token== null){
+            error.value = "error_security"
+            return
+        }
+
         doAsync {
-            val contextRequest = ContextRequest(Secrets4xx.TENANT, FintivAccounts4xx.currentToken(context).contextResponse.token)
+            val contextRequest = ContextRequest(Secrets4xx.TENANT, token.contextResponse.token)
             val createAccount = CreateAccount(arrayListOf(Attribute(key = "ACCOUNT_NAME", value = accountName)),
                     contextRequest = contextRequest, currency = currency)
             val call = retrofit.get()?.createAccount(createAccount)?.execute()
