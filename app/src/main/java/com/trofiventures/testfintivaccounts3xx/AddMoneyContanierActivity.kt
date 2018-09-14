@@ -7,12 +7,11 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
-import com.trofiventures.fintinvaccount4xx.viewModel.FintivAddContainer4xxViewModel
-import kotlinx.android.synthetic.main.activity_add_money_contanier.*
+import com.trofiventures.fintinvaccount4xx.viewModel.FintivMoneyContainer4xxViewModel
 
 class AddMoneyContanierActivity : AppCompatActivity() {
 
-    lateinit var viewModel: FintivAddContainer4xxViewModel
+    lateinit var viewModel: FintivMoneyContainer4xxViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +19,7 @@ class AddMoneyContanierActivity : AppCompatActivity() {
 
         FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
 
-        viewModel = ViewModelProviders.of(this).get(FintivAddContainer4xxViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(FintivMoneyContainer4xxViewModel::class.java)
 
         with(viewModel) {
             error.observe(this@AddMoneyContanierActivity, Observer {

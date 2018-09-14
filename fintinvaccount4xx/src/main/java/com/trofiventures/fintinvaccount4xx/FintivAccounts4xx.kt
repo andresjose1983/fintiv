@@ -3,7 +3,7 @@ package com.trofiventures.fintinvaccount4xx
 import android.content.Context
 import com.cardconnect.consumersdk.CCConsumer
 import com.google.gson.Gson
-import com.trofiventures.fintinvaccount4xx.model.response.SigonReponse
+import com.trofiventures.fintinvaccount4xx.model.response.SingOnResponse
 import com.trofiventures.fintivaccounts.util.Secrets4xx
 
 
@@ -35,14 +35,14 @@ object FintivAccounts4xx {
 
     fun cardConnect() = CCConsumer.getInstance().api
 
-    fun saveToken(context: Context, sigonReponse: SigonReponse) {
+    fun saveToken(context: Context, singOnResponse: SingOnResponse) {
         context.getSharedPreferences(FINTIV, Context.MODE_PRIVATE).edit()?.apply {
-            putString(TOKEN, Gson().toJson(sigonReponse))
+            putString(TOKEN, Gson().toJson(singOnResponse))
         }?.apply()
     }
 
-    fun currentToken(context: Context): SigonReponse? {
-        return Gson().fromJson(context.getSharedPreferences(FINTIV, Context.MODE_PRIVATE).getString(TOKEN, null), SigonReponse::class.java)
+    fun currentToken(context: Context): SingOnResponse? {
+        return Gson().fromJson(context.getSharedPreferences(FINTIV, Context.MODE_PRIVATE).getString(TOKEN, null), SingOnResponse::class.java)
     }
 
 }

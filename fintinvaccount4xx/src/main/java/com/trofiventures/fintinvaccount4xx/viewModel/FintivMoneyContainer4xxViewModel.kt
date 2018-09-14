@@ -4,7 +4,6 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.braintreepayments.cardform.utils.CardType
 import com.braintreepayments.cardform.view.CardForm
 import com.cardconnect.consumersdk.CCConsumerTokenCallback
 import com.cardconnect.consumersdk.domain.CCConsumerAccount
@@ -12,20 +11,22 @@ import com.cardconnect.consumersdk.domain.CCConsumerCardInfo
 import com.cardconnect.consumersdk.domain.CCConsumerError
 import com.cardconnect.consumersdk.enums.CCConsumerExpirationDateSeparator
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
-import com.trofiventures.fintinvaccount4xx.model.request.Attribute
+import com.trofiventures.fintinvaccount4xx.model.Attribute
 import com.trofiventures.fintinvaccount4xx.model.request.ContextRequest
+import com.trofiventures.fintinvaccount4xx.model.request.SendToken
 import com.trofiventures.fintinvaccount4xx.model.request.MoneyContainer
 import com.trofiventures.fintinvaccount4xx.model.response.CreateAccountResponse
 import com.trofiventures.fintivaccounts.services.RetrofitClient4xx
 import com.trofiventures.fintivaccounts.util.Secrets4xx
 import org.jetbrains.anko.doAsync
 
-class FintivAddContainer4xxViewModel(private val context: Application) : AndroidViewModel(context) {
+class FintivMoneyContainer4xxViewModel(private val context: Application) : AndroidViewModel(context) {
 
     private val retrofit = RetrofitClient4xx()
     var error: MutableLiveData<String> = MutableLiveData()
     var cardConnectToken: MutableLiveData<String> = MutableLiveData()
     var createAccountResponse: MutableLiveData<CreateAccountResponse> = MutableLiveData()
+    var moneyContainers: MutableLiveData<List<com.trofiventures.fintinvaccount4xx.model.response.MoneyContainer>> = MutableLiveData()
 
     fun addCreditCard(accountNumber: String,
                       expireYear: String,
@@ -90,7 +91,7 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
         }
 
         val token = FintivAccounts4xx.currentToken(context)
-        if(token== null){
+        if (token == null) {
             error.value = "error_security"
             return
         }
@@ -116,7 +117,7 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
                               expireMonth: String,
                               accountName: String,
                               description: String,
-                              cardToken: String){
+                              cardToken: String) {
 
         if (Secrets4xx.TENANT.isEmpty()) {
             error.value = "error_tenant"
@@ -124,7 +125,7 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
         }
 
         val token = FintivAccounts4xx.currentToken(context)
-        if(token== null){
+        if (token == null) {
             error.value = "error_security"
             return
         }
@@ -148,7 +149,8 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
             if (body != null) {
                 Log.d("hola", "Cardconnect token $cardToken" + body.id.toString())
                 createAccountResponse.postValue(body)
-            }
+            } else
+                error.postValue(body?.contextResponse?.statusCode)
         }
     }
 
@@ -172,5 +174,28 @@ class FintivAddContainer4xxViewModel(private val context: Application) : Android
 
         validateCreditCardConnect(cardForm.cardNumber, cardForm.expirationMonth,
                 cardForm.expirationYear, cardForm.cvv, cardHolder, description)
+    }
+
+    fun getMoneyContainers() {
+
+        if (Secrets4xx.TENANT.isEmpty()) {
+            error.value = "error_tenant"
+            return
+        }
+
+        val token = FintivAccounts4xx.currentToken(context)
+        if (token == null) {
+            error.value = "error_security"
+            return
+        }
+        doAsync {
+            val contextRequest = ContextRequest(Secrets4xx.TENANT, token.contextResponse.token)
+            val call = retrofit.get()?.getMoneyContainers(SendToken(contextRequest))?.execute()
+            val body = call?.body()
+            if (body != null)
+                moneyContainers.postValue(body.moneyContainers)
+            else
+                error.postValue(body?.contextResponse?.statusCode)
+        }
     }
 }

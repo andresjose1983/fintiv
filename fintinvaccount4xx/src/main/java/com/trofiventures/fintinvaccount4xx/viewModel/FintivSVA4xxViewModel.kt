@@ -3,9 +3,8 @@ package com.trofiventures.fintinvaccount4xx.viewModel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.util.Log
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
-import com.trofiventures.fintinvaccount4xx.model.request.Attribute
+import com.trofiventures.fintinvaccount4xx.model.Attribute
 import com.trofiventures.fintinvaccount4xx.model.request.ContextRequest
 import com.trofiventures.fintinvaccount4xx.model.request.CreateAccount
 import com.trofiventures.fintinvaccount4xx.model.response.CreateAccountResponse
@@ -33,7 +32,7 @@ class FintivSVA4xxViewModel(private val context: Application) : AndroidViewModel
         }
 
         val token = FintivAccounts4xx.currentToken(context)
-        if(token== null){
+        if (token == null) {
             error.value = "error_security"
             return
         }
@@ -44,10 +43,10 @@ class FintivSVA4xxViewModel(private val context: Application) : AndroidViewModel
                     contextRequest = contextRequest, currency = currency)
             val call = retrofit.get()?.createAccount(createAccount)?.execute()
             val body = call?.body()
-            if (body != null) {
-                Log.d("hola", body.id.toString())
+            if (body != null)
                 createAccountResponse.postValue(body)
-            }
+            else
+                error.postValue(body?.contextResponse?.statusCode)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.trofiventures.fintinvaccount4xx.model.request
 
+import com.trofiventures.fintinvaccount4xx.model.Attribute
 import java.io.Serializable
 
 class MoneyContainer(var accountNumber: String,

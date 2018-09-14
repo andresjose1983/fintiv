@@ -3,13 +3,12 @@ package com.trofiventures.fintinvaccount4xx.viewModel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.util.Log
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
 import com.trofiventures.fintinvaccount4xx.model.request.*
 import com.trofiventures.fintinvaccount4xx.model.response.AddCredentialResponse
 import com.trofiventures.fintinvaccount4xx.model.response.CreateAccountResponse
 import com.trofiventures.fintinvaccount4xx.model.response.CreatePersonResponse
-import com.trofiventures.fintinvaccount4xx.model.response.SigonReponse
+import com.trofiventures.fintinvaccount4xx.model.response.SingOnResponse
 import com.trofiventures.fintivaccounts.services.RetrofitClient4xx
 import com.trofiventures.fintivaccounts.util.Secrets4xx
 import org.jetbrains.anko.doAsync
@@ -20,7 +19,7 @@ class FintivAccounts4xxViewModel(private val context: Application) : AndroidView
     var error: MutableLiveData<String> = MutableLiveData()
     var personCreated: MutableLiveData<CreatePersonResponse> = MutableLiveData()
     var addCredentialResponse: MutableLiveData<AddCredentialResponse> = MutableLiveData()
-    var sigonResponse: MutableLiveData<SigonReponse> = MutableLiveData()
+    var singOnResponse: MutableLiveData<SingOnResponse> = MutableLiveData()
     var createAccountResponse: MutableLiveData<CreateAccountResponse> = MutableLiveData()
 
     fun registerUserWith(name: String,
@@ -70,16 +69,14 @@ class FintivAccounts4xxViewModel(private val context: Application) : AndroidView
                     if (bodyAddCredentialResponse != null) {
                         addCredentialResponse.postValue(bodyAddCredentialResponse)
                     }
-                    Log.d("hola", callAddPersonCredential.toString())
-                } else {
+                } else
                     error.postValue(body.contextResponse.statusCode)
-                }
             }
         }
     }
 
-    fun sigon(email: String,
-              password: String) {
+    fun singOn(email: String,
+               password: String) {
 
         if (email.isEmpty()) {
             error.value = "error-email"
@@ -96,12 +93,18 @@ class FintivAccounts4xxViewModel(private val context: Application) : AndroidView
                     Login("EMAIL", email),
                     Pass("password", password)))?.execute()
             val body = call?.body()
-            body?.let {
-                FintivAccounts4xx.saveToken(context, it)
-                Log.d("hola", it.contextResponse.token + " " + it.contextResponse.tenantName)
-                sigonResponse.postValue(it)
-            }
-            Log.d("hola", call?.message())
+            if (body != null) {
+                val contextRequest = ContextRequest(Secrets4xx.TENANT, body.contextResponse.token)
+                var callPerson = retrofit.get()?.getPerson(SendToken(contextRequest))?.execute()
+                callPerson?.body()?.let {
+                    it.person.let {
+                        body.person = it
+                        FintivAccounts4xx.saveToken(context, body)
+                        singOnResponse.postValue(body)
+                    }
+                }
+            } else
+                error.postValue(body?.contextResponse?.statusCode)
         }
     }
 }

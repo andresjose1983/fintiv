@@ -10,18 +10,18 @@ import android.text.TextWatcher
 import com.braintreepayments.cardform.utils.CardType
 import com.trofiventures.fintinvaccount4xx.fragment.CardBackFragment
 import com.trofiventures.fintinvaccount4xx.fragment.CardFrontFragment
-import com.trofiventures.fintinvaccount4xx.viewModel.FintivAddContainer4xxViewModel
+import com.trofiventures.fintinvaccount4xx.viewModel.FintivMoneyContainer4xxViewModel
 import kotlinx.android.synthetic.main.activity_add_credit_card.*
 
 
 class AddCreditCardActivity : AppCompatActivity() {
 
-    lateinit var viewModel: FintivAddContainer4xxViewModel
+    lateinit var viewModel: FintivMoneyContainer4xxViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_credit_card)
 
-        viewModel = ViewModelProviders.of(this).get(FintivAddContainer4xxViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(FintivMoneyContainer4xxViewModel::class.java)
 
         with(viewModel) {
             error.observe(this@AddCreditCardActivity, Observer {
