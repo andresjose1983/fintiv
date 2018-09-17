@@ -5,27 +5,23 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.trofiventures.fintinvaccount4xx.AddCreditCardActivity
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
+import com.trofiventures.fintinvaccount4xx.GetMoneyContainerActivity
 import com.trofiventures.fintinvaccount4xx.viewModel.FintivAccounts4xxViewModel
-import com.trofiventures.fintinvaccount4xx.viewModel.FintivMoneyContainer4xxViewModel
 import kotlinx.android.synthetic.main.activity__3xx.*
-import org.json.JSONObject
 
 class _4xx : AppCompatActivity() {
 
     private lateinit var viewModel: FintivAccounts4xxViewModel
-    private lateinit var viewModelMoneyContainers: FintivMoneyContainer4xxViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity__4xx)
 
         viewModel = ViewModelProviders.of(this).get(FintivAccounts4xxViewModel::class.java)
-        viewModelMoneyContainers = ViewModelProviders.of(this).get(FintivMoneyContainer4xxViewModel::class.java)
 
         FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
         FintivAccounts4xx.setupWithTenant(tenant = "JANUS")
@@ -52,14 +48,6 @@ class _4xx : AppCompatActivity() {
                 }
             })
         }
-
-        viewModelMoneyContainers.moneyContainers.observe(this, Observer {
-            it?.let {
-                it.forEach {
-                    Log.d("moneyContainers id", it.containerId.toString())
-                }
-            }
-        })
     }
 
     fun login(view: View) {
@@ -90,8 +78,8 @@ class _4xx : AppCompatActivity() {
         startActivity(Intent(this, AddCreditCardActivity::class.java))
     }
 
-    fun getMoneyContainers(view: View){
-        viewModelMoneyContainers.getMoneyContainers()
+    fun getMoneyContainers(view: View) {
+        startActivity(Intent(this, GetMoneyContainerActivity::class.java))
     }
 
     override fun onDestroy() {
@@ -102,6 +90,5 @@ class _4xx : AppCompatActivity() {
             addCredentialResponse.removeObservers(this@_4xx)
             singOnResponse.removeObservers(this@_4xx)
         }
-        viewModelMoneyContainers.moneyContainers.removeObservers(this)
     }
 }

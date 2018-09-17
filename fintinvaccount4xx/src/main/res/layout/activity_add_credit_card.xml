@@ -31,6 +31,7 @@
         </FrameLayout>
 
         <LinearLayout
+            android:id="@+id/other_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_container"
@@ -72,6 +73,18 @@
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/default_switch"
+            android:text="@string/is_default"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="50dp"
+            android:layout_below="@+id/other_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/save_fab"

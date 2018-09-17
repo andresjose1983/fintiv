@@ -13,8 +13,9 @@ import com.cardconnect.consumersdk.enums.CCConsumerExpirationDateSeparator
 import com.trofiventures.fintinvaccount4xx.FintivAccounts4xx
 import com.trofiventures.fintinvaccount4xx.model.Attribute
 import com.trofiventures.fintinvaccount4xx.model.request.ContextRequest
-import com.trofiventures.fintinvaccount4xx.model.request.SendToken
 import com.trofiventures.fintinvaccount4xx.model.request.MoneyContainer
+import com.trofiventures.fintinvaccount4xx.model.request.RemoveMoneyContainer
+import com.trofiventures.fintinvaccount4xx.model.request.SendToken
 import com.trofiventures.fintinvaccount4xx.model.response.CreateAccountResponse
 import com.trofiventures.fintivaccounts.services.RetrofitClient4xx
 import com.trofiventures.fintivaccounts.util.Secrets4xx
@@ -27,13 +28,15 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
     var cardConnectToken: MutableLiveData<String> = MutableLiveData()
     var createAccountResponse: MutableLiveData<CreateAccountResponse> = MutableLiveData()
     var moneyContainers: MutableLiveData<List<com.trofiventures.fintinvaccount4xx.model.response.MoneyContainer>> = MutableLiveData()
+    var moneyContainerRemoved: MutableLiveData<Int> = MutableLiveData()
 
     fun addCreditCard(accountNumber: String,
                       expireYear: String,
                       expireMonth: String,
                       accountName: String,
                       cvv: String,
-                      description: String) {
+                      description: String,
+                      default: Boolean) {
 
         if (accountNumber.isEmpty()) {
             error.value = "error_account_number"
@@ -65,7 +68,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
             return
         }
 
-        validateCreditCardConnect(accountNumber, expireMonth, expireYear, cvv, accountName, description)
+        validateCreditCardConnect(accountNumber, expireMonth, expireYear, cvv, accountName, description, default)
     }
 
     private fun validateCreditCardConnect(accountNumber: String,
@@ -73,7 +76,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
                                           expireYear: String,
                                           cvv: String,
                                           cardHolder: String,
-                                          description: String) {
+                                          description: String, default: Boolean) {
         val cc = CCConsumerCardInfo()
         cc.cardNumber = accountNumber
         cc.expirationDate = expireMonth.plus("/").plus(expireYear)
@@ -105,7 +108,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
 
                 override fun onCCConsumerTokenResponse(p0: CCConsumerAccount) {
                     cardConnectToken.postValue(p0.token)
-                    sendCardToken(accountNumber, cvv, expireYear, expireMonth, cardHolder, description, p0.token)
+                    sendCardToken(accountNumber, cvv, expireYear, expireMonth, cardHolder, description, p0.token, default)
                 }
             })
         }
@@ -117,7 +120,8 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
                               expireMonth: String,
                               accountName: String,
                               description: String,
-                              cardToken: String) {
+                              cardToken: String,
+                              default: Boolean) {
 
         if (Secrets4xx.TENANT.isEmpty()) {
             error.value = "error_tenant"
@@ -143,7 +147,8 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
                     description = description,
                     contextRequest = ContextRequest(Secrets4xx.TENANT, token.contextResponse.token),
                     attributesSecure = arrayListOf(Attribute("CREDIT_CARD_CVV", cvv)),
-                    containerSubType = containerSubType)
+                    containerSubType = containerSubType,
+                    isDefault = default)
             val call = retrofit.get()?.addMoneyContainer(moneyContainer)?.execute()
             val body = call?.body()
             if (body != null) {
@@ -155,7 +160,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
     }
 
     fun addCreditCard(cardForm: CardForm, cardHolder: String,
-                      description: String) {
+                      description: String, default: Boolean = false) {
 
         if (!cardForm.isValid) {
             cardForm.validate()
@@ -173,7 +178,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
         }
 
         validateCreditCardConnect(cardForm.cardNumber, cardForm.expirationMonth,
-                cardForm.expirationYear, cardForm.cvv, cardHolder, description)
+                cardForm.expirationYear, cardForm.cvv, cardHolder, description, default)
     }
 
     fun getMoneyContainers() {
@@ -194,6 +199,30 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
             val body = call?.body()
             if (body != null)
                 moneyContainers.postValue(body.moneyContainers)
+            else
+                error.postValue(body?.contextResponse?.statusCode)
+        }
+    }
+
+    fun delete(moneyContainer: com.trofiventures.fintinvaccount4xx.model.response.MoneyContainer) {
+        if (Secrets4xx.TENANT.isEmpty()) {
+            error.value = "error_tenant"
+            return
+        }
+
+        val token = FintivAccounts4xx.currentToken(context)
+        if (token == null) {
+            error.value = "error_security"
+            return
+        }
+        doAsync {
+            val contextRequest = ContextRequest(Secrets4xx.TENANT, token.contextResponse.token)
+
+            val call = retrofit.get()?.removeMoneyContainer(RemoveMoneyContainer(moneyContainer.containerId,
+                    contextRequest, token.person?.id ?: ""))?.execute()
+            val body = call?.body()
+            if (body != null && body.contextResponse.statusCode.equals("SUCCESS"))
+                moneyContainerRemoved.postValue(moneyContainer.containerId)
             else
                 error.postValue(body?.contextResponse?.statusCode)
         }

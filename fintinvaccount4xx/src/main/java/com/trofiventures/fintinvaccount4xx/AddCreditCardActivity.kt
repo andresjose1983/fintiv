@@ -51,7 +51,7 @@ class AddCreditCardActivity : AppCompatActivity() {
 
         save_fab.setOnClickListener {
             viewModel.addCreditCard(add_credit_card_form, card_holder_edit_text.text.toString(),
-                    description_edit_text.text.toString())
+                    description_edit_text.text.toString(), default_switch.isSelected)
         }
 
         val cardFrontFragment = supportFragmentManager.findFragmentById(R.id.front_card_view) as CardFrontFragment

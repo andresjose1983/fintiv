@@ -29,4 +29,7 @@ interface FintivAccounts4xxApi {
 
     @POST("getPerson")
     fun getPerson(@Body sendToken: SendToken): Call<PersonResponse>
+
+    @POST("removeMoneyContainer")
+    fun removeMoneyContainer(@Body removeMoneyContainer: RemoveMoneyContainer): Call<RemoveMoneyContainerResponse>
 }

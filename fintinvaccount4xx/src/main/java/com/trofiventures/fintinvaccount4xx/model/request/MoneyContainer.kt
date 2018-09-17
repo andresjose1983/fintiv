@@ -10,4 +10,5 @@ class MoneyContainer(var accountNumber: String,
                      var containerType: String = "CC",
                      var contextRequest: ContextRequest,
                      var currency: String = "840",
-                     var description: String): Serializable
+                     var description: String,
+                     var isDefault: Boolean): Serializable

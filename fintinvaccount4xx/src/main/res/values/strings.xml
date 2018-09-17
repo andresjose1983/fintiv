@@ -16,5 +16,6 @@
     <string name="card_number">Card Number</string>
     <string name="card_validity">Expires</string>
     <string name="card_cvv">CVV/CVC Number</string>
+    <string name="is_default">Set as default:</string>
 
 </resources>
