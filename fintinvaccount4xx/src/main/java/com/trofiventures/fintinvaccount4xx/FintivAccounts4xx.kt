@@ -23,17 +23,29 @@ object FintivAccounts4xx {
         }
     }
 
-    fun setupWithCardConnect(endPoint: String) {
+    fun setupWithCardConnect(endPoint: String, merchantId: String, user: String, password: String) {
 
         endPoint.let {
             Secrets4xx.CARD_CONNECT = it
-
-            CCConsumer.getInstance().api.setEndPoint(it)
-            CCConsumer.getInstance().api.setDebugEnabled(true)
+            //CCConsumer.getInstance().api.setEndPoint(it)
+            //CCConsumer.getInstance().api.setDebugEnabled(true)
         }
+
+        merchantId.let {
+            Secrets4xx.MERCHANT_ID = it
+        }
+
+        user.let {
+            Secrets4xx.USER = it
+        }
+
+        password.let {
+            Secrets4xx.PASSWORD = it
+        }
+
     }
 
-    fun cardConnect() = CCConsumer.getInstance().api
+   // fun cardConnect() = CCConsumer.getInstance().api
 
     fun saveToken(context: Context, singOnResponse: SingOnResponse) {
         context.getSharedPreferences(FINTIV, Context.MODE_PRIVATE).edit()?.apply {

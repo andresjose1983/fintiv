@@ -23,7 +23,7 @@ class _4xx : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(FintivAccounts4xxViewModel::class.java)
 
-        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
+        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardconnect/", "496160873888", "testing", "testing123")
         FintivAccounts4xx.setupWithTenant(tenant = "JANUS")
 
         with(viewModel) {

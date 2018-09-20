@@ -32,6 +32,8 @@ class MoneyContainerAdapter(val viewModel: FintivMoneyContainer4xxViewModel) : R
                 moneyContainer.attributes.forEach {
                     if (it.key.equals("ACCOUNT_NAME"))
                         account_name_text_view.text = it.value
+                    if (it.key.equals("ACCOUNT"))
+                        last_for_digit_text_view.text = it.value
                 }
 
                 if (!moneyContainer.description.isNullOrEmpty()) {
@@ -40,7 +42,7 @@ class MoneyContainerAdapter(val viewModel: FintivMoneyContainer4xxViewModel) : R
                 } else
                     description_text_view.visibility = View.GONE
 
-                last_for_digit_text_view.text = moneyContainer.last4AccountDigits
+                //last_for_digit_text_view.text = moneyContainer.last4AccountDigits
 
                 type_text_view.text = moneyContainer.type.plus(" ").plus(moneyContainer.subType
                         ?: "")

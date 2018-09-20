@@ -17,7 +17,8 @@ class AddMoneyContanierActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_money_contanier)
 
-        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardsecure/cs")
+        FintivAccounts4xx.setupWithCardConnect("https://fts.cardconnect.com:6443/cardconnect/", "496160873888", "testing", "testing123")
+        FintivAccounts4xx.setupWithTenant(tenant = "JANUS")
 
         viewModel = ViewModelProviders.of(this).get(FintivMoneyContainer4xxViewModel::class.java)
 
