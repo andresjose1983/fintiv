@@ -1,5 +1,7 @@
 package com.trofiventures.fintinvaccount4xx
 
+import android.app.Activity
+import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -7,11 +9,14 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import com.braintreepayments.cardform.utils.CardType
 import com.trofiventures.fintinvaccount4xx.fragment.CardBackFragment
 import com.trofiventures.fintinvaccount4xx.fragment.CardFrontFragment
 import com.trofiventures.fintinvaccount4xx.viewModel.FintivMoneyContainer4xxViewModel
 import kotlinx.android.synthetic.main.activity_add_credit_card.*
+import org.jetbrains.anko.indeterminateProgressDialog
 
 
 class AddCreditCardActivity : AppCompatActivity() {
@@ -23,20 +28,35 @@ class AddCreditCardActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(FintivMoneyContainer4xxViewModel::class.java)
 
+        var dialog: ProgressDialog? = null
         with(viewModel) {
             error.observe(this@AddCreditCardActivity, Observer {
+                dialog?.dismiss()
                 it?.let {
-                    android.widget.Toast.makeText(this@AddCreditCardActivity, it, android.widget.Toast.LENGTH_SHORT).show()
+                    when (it) {
+                        "error_card_form" -> ""
+                        else -> {
+                            android.widget.Toast.makeText(this@AddCreditCardActivity, it, android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             })
             createAccountResponse.observe(this@AddCreditCardActivity, Observer {
-                it?.let {
-                    android.widget.Toast.makeText(this@AddCreditCardActivity, it.contextResponse.statusCode, android.widget.Toast.LENGTH_SHORT).show()
+                dialog?.dismiss()
+                when (it?.contextResponse?.statusCode) {
+                    "SUCCESS" -> {
+                        Toast.makeText(this@AddCreditCardActivity, getString(R.string.cc_added), Toast.LENGTH_SHORT).show()
+                        setResult(502)
+                        finish()
+                    }
+                    "SECURITY" -> {
+                        Toast.makeText(this@AddCreditCardActivity, "LOGIN AGAIN", Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
             cardConnectToken.observe(this@AddCreditCardActivity, Observer {
                 it?.let {
-                    android.widget.Toast.makeText(this@AddCreditCardActivity, it, android.widget.Toast.LENGTH_SHORT).show()
+                    //android.widget.Toast.makeText(this@AddCreditCardActivity, it, android.widget.Toast.LENGTH_SHORT).show()
                 }
             })
         }
@@ -50,6 +70,10 @@ class AddCreditCardActivity : AppCompatActivity() {
                 .setup(this)
 
         save_fab.setOnClickListener {
+            dialog = indeterminateProgressDialog(message = R.string.submitting)
+            dialog?.show()
+            val imm = this.currentFocus.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.currentFocus.windowToken, 0)
             viewModel.addCreditCard(add_credit_card_form, card_holder_edit_text.text.toString(),
                     description_edit_text.text.toString(), default_switch.isSelected)
         }

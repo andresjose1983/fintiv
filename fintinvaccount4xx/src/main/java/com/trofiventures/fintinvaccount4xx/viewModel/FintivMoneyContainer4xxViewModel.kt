@@ -210,8 +210,8 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
             "MASTERCARD" -> "5500000000000004"
             "VISA" -> "4111111111111111"
             "AMERICANEXPRESS" -> "340000000000009"
-            "DINERS" -> "DISCOVER"
-            else -> ""
+            "DINERS" -> "36438999960016"
+            else -> "3528000000000007"
         }
     }
 
@@ -219,6 +219,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
                       description: String, default: Boolean = false) {
 
         if (!cardForm.isValid) {
+            error.value = "error_card_form"
             cardForm.validate()
             return
         }
