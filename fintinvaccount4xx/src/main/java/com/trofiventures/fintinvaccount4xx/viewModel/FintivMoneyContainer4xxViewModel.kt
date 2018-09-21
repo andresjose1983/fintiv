@@ -123,7 +123,7 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
             else if (accountNumber.startsWith("34") || accountNumber.startsWith("37") && accountNumber.length == 15) "AMERICANEXPRESS"
             else if ((accountNumber.startsWith("36") && accountNumber.length == 14) || (accountNumber.startsWith("55") && accountNumber.length == 16)) "DINERS"
             else if ((accountNumber.startsWith("6011") || accountNumber.startsWith("650")) || accountNumber.length == 16) "DISCOVER"
-            else if ((accountNumber.startsWith("2131") || accountNumber.startsWith("1800")) || accountNumber.length == 15) "DISCOVER"
+            else if (accountNumber.startsWith("35") || (accountNumber.length == 15 || accountNumber.length == 19)) "JCB"
             else ""
 
             val creditCardCardConnect = CreditCardCardConnect(merchid = Secrets4xx.MERCHANT_ID,
@@ -178,10 +178,10 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
             else if (accountNumber.startsWith("34") || accountNumber.startsWith("37") && accountNumber.length == 15) "AMERICANEXPRESS"
             else if ((accountNumber.startsWith("36") && accountNumber.length == 14) || (accountNumber.startsWith("55") && accountNumber.length == 16)) "DINERS"
             else if ((accountNumber.startsWith("6011") || accountNumber.startsWith("650")) || accountNumber.length == 16) "DISCOVER"
-            else if ((accountNumber.startsWith("2131") || accountNumber.startsWith("1800")) || accountNumber.length == 15) "DISCOVER"
+            else if (accountNumber.startsWith("35") || (accountNumber.length == 15 || accountNumber.length == 19)) "JCB"
             else ""
 
-            val moneyContainer = MoneyContainer(accountNumber,
+            val moneyContainer = MoneyContainer(getSampleCreditCard(containerSubType),
                     arrayListOf(
                             Attribute("EXPIRE_YEAR", expireYear),
                             Attribute("EXPIRE_MONTH", expireMonth),
@@ -202,6 +202,16 @@ class FintivMoneyContainer4xxViewModel(private val context: Application) : Andro
                 createAccountResponse.postValue(body)
             } else
                 error.postValue(body?.contextResponse?.statusCode)
+        }
+    }
+
+    private fun getSampleCreditCard(type: String): String {
+        return when(type){
+            "MASTERCARD" -> "5500000000000004"
+            "VISA" -> "4111111111111111"
+            "AMERICANEXPRESS" -> "340000000000009"
+            "DINERS" -> "DISCOVER"
+            else -> ""
         }
     }
 
